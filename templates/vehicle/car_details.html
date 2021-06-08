@@ -1,0 +1,117 @@
+{% extends 'layout/admin_layout.html' %}
+{% load bootstrap4 %}
+{% load static %}
+{% block title %}
+    Car Details
+{% endblock %}
+{% block css %}
+    <link href="{% static 'vendor/datatables/dataTables.bootstrap4.min.css' %}" rel="stylesheet">
+{% endblock %}
+{% block add %}
+    <div class="row">
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#assignbranchBackdrop">
+            <span class="font-weight-semibold">Assign Branch</span>
+        </button>
+        <div class="col-md-4 mb-3 mb-md-0">
+            <button class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+                <span class="font-weight-semibold">Maintenance</span>
+            </button>
+        </div>
+        <div class="ml-3 text-danger">
+            {{ error }}
+        </div>
+    </div>
+{% endblock %}
+{% block foot %}
+    <div class="modal fade" id="assignbranchBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel"><h4 class="text-primary">Please Select A Branch To Assign To</h4></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="{% url 'vehicle:assign_car_branch' car.id %}" method="post">{% csrf_token %}
+                        <div class="form-group">
+                            <label for="id_branch">Branches</label>
+                            <select name="branch" id="id_branch" class="custom-select">
+                                <option value="">--------</option>
+                                {% for b in branches %}
+                                    <option value="{{ b.id }}">{{ b.location }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="Submit" class="btn btn-primary">Assign</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Vehicle Maintenance (last maintained:  {{ last_maintain }} ago) </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    {% if car.available and not car.sent_for_maintenance %}
+                        <form action="" method="post">{% csrf_token %}
+                            <input type="hidden" name="form_type" value="make_m">
+                            {% bootstrap_form form1 %}
+                            <button type="submit" class="btn btn-sm btn-success">Send</button>
+                        </form>
+                    {% elif car.sent_for_maintenance %}
+                        <div class="mb3">Please click on the button below to confirm the has been brought back from maintenance.</div>
+                        <div class="mt-3">
+                            <form action="" method="post">{% csrf_token %}
+                                <input type="hidden" name="form_type" value="receive_m">
+
+                                <button type="submit" class="btn btn-sm btn-success">Confirm</button>
+                            </form>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block contents %}
+    <div class="row">
+        <div class="col-5">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Details</h3>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">Brand || {{ car.brand.upper }}</li>
+                        <li class="list-group-item">Name || {{ car.name.upper}}</li>
+                        <li class="list-group-item">Colour || {{ car.colour.upper }}</li>
+                        <li class="list-group-item">Year of manufacture || {{ car.yr_of_manufacture.year }}</li>
+                        <li class="list-group-item">Date Bought || {{ car.procurement_date.date }}</li>
+                        <li class="list-group-item">Registration Number || {{ car.registration_number.upper}}</li>
+                        {% if car.branch %}
+                            <li class="list-group-item">Current Branch || {{ car.branch }}</li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-5 ml-2">
+            <div class="card">
+                <div class="card-body">
+                    {{ car.image }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

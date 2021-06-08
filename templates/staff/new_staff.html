@@ -1,0 +1,22 @@
+{% extends 'layout/layout.html'%}
+{% load bootstrap4 %}
+
+
+{% block contents %}
+    <div class="row">
+        <div class="col-6">
+            <div class="card">
+                <div class="card-body">
+                    <form action="" method="post">{% csrf_token %}
+                        {% bootstrap_form form%}
+                        <input type="submit" class="btn  btn-block btn-success" value="Submit">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+

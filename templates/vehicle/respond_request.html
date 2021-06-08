@@ -1,0 +1,82 @@
+{%extends 'layout/admin_layout.html' %}
+{% load bootstrap4 %}
+{% load static %}
+{% block req %}
+    active
+{% endblock%}
+{% block title %}
+    Dashboard
+{% endblock %}
+
+{% block css %}
+    <link href="{% static 'vendor/datatables/dataTables.bootstrap4.min.css' %}" rel="stylesheet">
+{% endblock %}
+{% block branch_name %}
+    {{ requestt.requested_by.branch }}
+{% endblock %}
+{% block add %}
+    {% if requestt.response == 'Pending' %}
+        <form action="{% url 'vehicle:respond_request' requestt.id %}" method="post">{% csrf_token %}
+            <input type="hidden" name="form_type" value="decline">
+            <button class="btn btn-sm btn-danger" type="submit" title="Decline request">Decline</button>
+        </form>
+    {% elif requestt.response == 'Declined' %}
+        <h4 class="text-danger">This request has been declined</h4>
+    {% elif requestt.response == 'Completed' %}
+         <form action="{% url 'vehicle:respond_request' requestt.id %}" method="post">{% csrf_token %}
+            <input type="hidden" name="form_type" value="complete">
+            <button class="btn btn-sm btn-success" type="submit" title="Decline request">Complete</button>
+        </form>
+    {% elif requestt.response == 'Received' %}
+        This request has been completed
+    {% endif %}
+{% endblock %}
+{% block script %}
+    <script src="{% static 'vendor/datatables/jquery.dataTables.min.js'%}"></script>
+    <script src="{% static 'vendor/datatables/dataTables.bootstrap4.min.js'%}"></script>
+    <script src="{% static 'js/demo/datatables-demo.js'%}"></script>
+{% endblock %}
+{% block contents %}
+    <div class="row">
+        <div class="col-6">
+            <div class="card">
+                <div class="card-body">
+                    <h3>Request made by - {{ requestt.requested_by.staff.full_name }}</h3>
+                    <hr>
+                    <h3>Reason : {{ requestt.reason }}</h3>
+                    <hr>
+                    <h3>Request made on {{ requestt.created_at.date }}</h3>
+                    <hr>
+                    {% if requestt.vehicle_assigned %}
+                        <h3>Assigned Vehicle : {{ requestt.vehicle_assigned }}</h3>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <div class="row mt-3">
+        <div class="col-6">
+            {% if requestt.response != 'Declined' %}
+                <form method="post" action="{% url 'vehicle:respond_request' requestt.id %}">{% csrf_token %}
+                    <input type="hidden" name="form_type" value="assign">
+                    <div class="form-group">
+                        {% if requestt.vehicle_assigned %}
+                            <label for="id_vehicle">Change vehicle assigned</label>
+                        {% else %}
+                            <label for="id_vehicle">Select the vehicle</label>
+                        {% endif %}
+
+                        <select name="vehicle" id="id_vehicle" class="custom-select">
+                            <option value="">-------</option>
+                            {% for b in vehicles %}
+                                <option value="{{b.id }}">{{ b.brand }} | {{ b.name }} | {{ b.registration_number }}</option>
+                            {% endfor %}
+                        </select>
+                        <input type="submit" class="mt-3 btn btn-block btn-success" value="Assign">
+                    </div>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,111 @@
+{% extends 'layout/staff_layout.html' %}
+{% load static %}
+{% block dash %}
+    active
+{% endblock %}
+{% block css %}
+    <link href="{% static 'vendor/datatables/dataTables.bootstrap4.min.css' %}" rel="stylesheet">
+{% endblock %}
+{% block add %}
+    <button class="btn btn-outline btn-light" type="button" data-toggle="modal" data-target="#reqBackdrop"><i class="far fa-edit" title="make a new request">+</i></button>
+{% endblock %}
+{% block foot%}
+    <div class="modal fade" id="reqBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="branchBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Make Request</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="{% url 'staff:make_request' %}" method="post">{% csrf_token %}
+                        <div class="form-group">
+                            <label for="id_reason">Reason</label>
+                            <input type="text" name="reason" class="form-control" id="id_reason" placeholder="Type your reason....">
+                        </div>
+                        <div class="form-group">
+                            <label for="id_day_needed">Day</label>
+                            <input type="date" class="form-control" name="day_needed" id="id_day_needed">
+                        </div>
+                        <input type="submit" class="btn btn-success btn-outline-dark" value="Make Request">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block contents %}
+    <div class="row">
+        <div class="col-8">
+            <div class="card">
+                <div class="card-header">
+                    All Requests
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="dataTable">
+                            <thead>
+                            <tr>
+                                <th>Created At</th>
+                                <th>Reason</th>
+                                <th>Day Needed</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for req in requests %}
+                                <tr>
+                                    <td>{{ req.created_at.date }}</td>
+                                    <td>{{ req.reason }}</td>
+                                    <td>{{ req.day_needed.date }}</td>
+                                    <td>{{ req.get_response_display }}</td>
+                                    <td>
+                                        {% if req.response != 'Canceled' %}
+                                            <div class="row">
+                                                <div class="">
+                                                    {% if req.response == 'Approved' %}
+                                                     <form action="{% url 'staff:staff_respond_request' req.id %}" method="post">{% csrf_token %}
+                                                        <input type="hidden" name="form_type" value="receive">
+                                                        <button title="receive" type="submit" class="btn btn-sm btn-outline-dark">receive</button>
+                                                    </form>
+                                                    {% endif %}
+                                                </div>
+                                                {% if req.response == 'VehReceived' %}
+                                                <div class="ml-2">
+                                                    <form action="{% url 'staff:staff_respond_request' req.id %}" method="post">{% csrf_token %}
+                                                        <input type="hidden" name="form_type" value="return">
+                                                        <button title="return" class="btn btn-sm btn-outline-info"><i class="fas fa-undo-alt"></i></button>
+                                                    </form>
+                                                </div>
+                                                {% endif %}
+                                                {% if req.response != 'VehReceived' %}
+                                                <div class="ml-2">
+                                                    <form action="{% url 'staff:staff_respond_request' req.id %}" method="post">{% csrf_token %}
+                                                        <input type="hidden" name="form_type" value="cancel">
+                                                        <button title="cancel" class="btn btn-sm btn-outline-danger"><i class="fas fa-window-close"></i></button>
+                                                    </form>
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                        {% else %}
+                                            N/A
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block script %}
+    <script src="{% static 'vendor/datatables/jquery.dataTables.min.js'%}"></script>
+    <script src="{% static 'vendor/datatables/dataTables.bootstrap4.min.js'%}"></script>
+    <script src="{% static 'js/demo/datatables-demo.js'%}"></script>
+{% endblock %}

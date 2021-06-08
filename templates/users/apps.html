@@ -1,0 +1,13 @@
+{% extends 'layout/layout.html' %}
+{% block page_title %}
+    <h2 align="center">Vehicle Log System</h2>
+{% endblock %}
+{% block contents %}
+    <h1 align="center">Welcome {{ user.full_name.upper }}</h1>
+    <div class="mt-5">
+    <p><h3 align="center">Please click the button below to access your dashboard</h3></p>
+    </div>
+    <div class="mt-5" align="center">
+    <a {% if user.user_type == 'GM' %} href="{% url 'vehicle:general_manager_view' %}"{% elif user.user_type == 'M' %}href="{% url 'vehicle:branch_manager' user.id %}"{% else %}href="{% url 'staff:staff_view' %}"{% endif %} class="btn btn-primary btn-sm"><i class="far fa fa-forward fa-3x"></i></a>
+    </div>
+{% endblock %}

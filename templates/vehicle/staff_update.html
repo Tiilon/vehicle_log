@@ -1,0 +1,41 @@
+{% extends 'layout/admin_layout.html' %}
+{% load bootstrap4 %}
+{% load static %}
+{% block add %}
+    Staff Name: {{ queryset.full_name }}
+{% endblock%}
+{% block branchurl %}
+    {% url 'vehicle:branches' %}
+{% endblock %}
+{% block title %}
+Staff Update
+{% endblock %}
+{% block css %}
+    <link href="{% static 'vendor/datatables/dataTables.bootstrap4.min.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block contents %}
+    <div class="row">
+        <div class="col-8">
+            <div class="card">
+                <div class="card-header">
+                    Please Update User
+                </div>
+                <div class="card-body">
+                    <form action="" method="post">{% csrf_token %}
+                        {% bootstrap_form form %}
+                        <input type="submit" class="btn btn-sm btn-success" value="Update">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'vendor/datatables/jquery.dataTables.min.js'%}"></script>
+    <script src="{% static 'vendor/datatables/dataTables.bootstrap4.min.js'%}"></script>
+    <script src="{% static 'js/demo/datatables-demo.js'%}"></script>
+{% endblock %}
+

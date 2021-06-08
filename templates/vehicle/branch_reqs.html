@@ -1,0 +1,68 @@
+{%extends 'layout/admin_layout.html' %}
+{% load bootstrap4 %}
+{% load static %}
+{% block req %}
+    active
+{% endblock%}
+{% block title %}
+    Requests
+{% endblock %}
+{% block requrl %}
+{% url 'vehicle:manager_requests' branch.id %}
+{% endblock %}
+{% block staffurl %}
+{% url 'vehicle:branch_staff_list' branch.id %}
+{% endblock %}
+{% block css %}
+    <link href="{% static 'vendor/datatables/dataTables.bootstrap4.min.css' %}" rel="stylesheet">
+{% endblock %}
+{% block branch_name %}
+    {{ branch.location }}
+{% endblock %}
+{% block add %}
+
+{% endblock %}
+{% block contents %}
+    <div class="card">
+        <div class="card-header">
+            All Requests
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable">
+                    <thead>
+                    <tr>
+                        <th>Staff</th>
+                        <th>Date of Request</th>
+                        <th>Reason</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for req in requests %}
+                        <tr>
+                            <td>{{ req.requested_by }}</td>
+                            <td>{{ req.created_at }}</td>
+                            <td>{{ req.reason }}</td>
+                            <td>
+                                <a href="{% url 'vehicle:respond_request' req.id %}" class="btn btn-s, btn-outline-dark"><i class="fas fa-exclamation-circle"></i></a>
+                                {% if req.response == 'Approved' %}car yet to be returned{% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+{% block foot %}
+
+{% endblock %}
+{% block script %}
+    <script src="{% static 'vendor/datatables/jquery.dataTables.min.js'%}"></script>
+    <script src="{% static 'vendor/datatables/dataTables.bootstrap4.min.js'%}"></script>
+    <script src="{% static 'js/demo/datatables-demo.js'%}"></script>
+{% endblock %}

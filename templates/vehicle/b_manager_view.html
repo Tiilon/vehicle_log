@@ -1,0 +1,76 @@
+{%extends 'layout/admin_layout.html' %}
+{% load bootstrap4 %}
+{% load static %}
+{% block dash %}
+    active
+{% endblock%}
+{% block branch %}
+{{ branch.location }}
+{% endblock %}
+{% block title %}
+Dashboard
+{% endblock %}
+{% block requrl %}
+{% url 'vehicle:manager_requests' branch.id %}
+{% endblock %}
+{% block staffurl %}
+{% url 'vehicle:branch_staff_list' branch.id %}
+{% endblock %}
+{% block css %}
+    <link href="{% static 'vendor/datatables/dataTables.bootstrap4.min.css' %}" rel="stylesheet">
+{% endblock %}
+{% block branch_name %}
+{{ branch.location }}
+{% endblock %}
+{% block add %}
+
+{% endblock %}
+{% block contents %}
+    <div class="card">
+        <div class="card-header">
+            All Cars
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable">
+                    <thead>
+                    <tr>
+                        <th>Brand</th>
+                        <th>Name</th>
+                        <th>Colour</th>
+                        <th>Date Manufactured</th>
+                        <th>Date Bought</th>
+                        <th>Registration Number</th>
+                        <th>Details</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for car in cars %}
+                        <tr>
+                            <td>{{ car.brand.upper }}</td>
+                            <td>{{ car.name.upper }}</td>
+                            <td>{{ car.colour.upper }}</td>
+                            <td>{{ car.yr_of_manufacture.date }}</td>
+                            <td>{{ car.procurement_date.date }}</td>
+                            <td>{{ car.registration_number.upper }}</td>
+                            <td>
+                                <a href="{% url 'vehicle:car_details' car.id %}" class="btn btn-sm btn-primary"><i class="fas fa-info-circle"></i></a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+{% block foot %}
+
+{% endblock %}
+{% block script %}
+    <script src="{% static 'vendor/datatables/jquery.dataTables.min.js'%}"></script>
+    <script src="{% static 'vendor/datatables/dataTables.bootstrap4.min.js'%}"></script>
+    <script src="{% static 'js/demo/datatables-demo.js'%}"></script>
+{% endblock %}

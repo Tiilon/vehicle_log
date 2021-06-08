@@ -1,0 +1,174 @@
+{% extends 'layout/admin_layout.html' %}
+{% load bootstrap4 %}
+{% load static %}
+{% block title %}
+    Branch Details
+{% endblock %}
+{% block staffurl %}
+    {% url 'vehicle:manager_staff_list' %}
+{% endblock %}
+{% block branchurl %}
+    {% url 'vehicle:branches' %}
+{% endblock %}
+{% block css %}
+    <link href="{% static 'vendor/datatables/dataTables.bootstrap4.min.css' %}" rel="stylesheet">
+{% endblock %}
+{% block add %}
+    {% if not branch.manager %}
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#assignbranchmBackdrop">
+        Assign Branch Manager
+    </button>
+    {% endif %}
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#assignbranchsBackdrop">
+        Assign Staff To Branch
+    </button>
+    <h4 class="text-danger">{{ error }}</h4>
+{% endblock %}
+{% block foot %}
+    <div class="modal fade" id="assignbranchmBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel"><h4 class="text-primary">Please Select Manager</h4></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="" method="post">{% csrf_token %}
+                        <div class="form-group">
+                            <input type="hidden" name="form_type" value="manager">
+                            <label for="id_branch">Manager</label>
+                            <select name="user" id="id_user" class="custom-select">
+                                <option value="">--------</option>
+                                {% for manager in managers %}
+                                    <option value="{{ manager.id }}">{{ manager.full_name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="Submit" class="btn btn-primary">Assign</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="assignbranchsBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel"><h4 class="text-primary">Please Select Staff</h4></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="" method="post">{% csrf_token %}
+                        <div class="form-group">
+                            <input type="hidden" name="form_type" value="staff">
+                            <label for="id_branch">Staff</label>
+                            <select name="staff" id="id_staff" class="custom-select">
+                                <option value="">--------</option>
+                                {% for s in staff %}
+                                    <option value="{{ s.id }}">{{ s.full_name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="Submit" class="btn btn-primary">Assign</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block contents %}
+    <div class="row">
+        <div class="col-3">
+            <div class="card">
+                <div class="card-header">{{ branch.location }} Branch</div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card">
+                {% if branch.manager %}
+                    <div class="card-body">Manager: {{ branch.manager.full_name.upper}}
+                        <div class="btn btn-sm float-right">
+                            <form action="{% url 'vehicle:remove_manager' branch.id %}" method="post">{% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-light" title="remove as branch manager"><i class="fas fa-user-slash"></i></button>
+                            </form>
+                        </div>
+                    </div>
+                {% else %}
+                    <h3 class="text-danger">No manager has been assigned to this branch</h3>
+                {% endif %}
+
+
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card">
+                <div class="card-body">Total Number Of Cars: {{ cars.count }}</div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card">
+                <div class="card-body">Total Number Of Staff: {{ branch.staff.count}}</div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-10">
+            <div class="card">
+                <div class="card-header">
+                    All Cars
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="dataTable">
+                            <thead>
+                            <tr>
+                                <th>Brand</th>
+                                <th>Name</th>
+                                <th>Colour</th>
+                                <th>Date Manufactured</th>
+                                <th>Date Bought</th>
+                                <th>Registration Number</th>
+                                <th>Details</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for car in cars %}
+                                <tr>
+                                    <td>{{ car.brand.upper }}</td>
+                                    <td>{{ car.name.upper }}</td>
+                                    <td>{{ car.colour.upper }}</td>
+                                    <td>{{ car.yr_of_manufacture.date }}</td>
+                                    <td>{{ car.procurement_date.date }}</td>
+                                    <td>{{ car.registration_number.upper }}</td>
+                                    <td>
+                                        <a href="{% url 'vehicle:car_details' car.id %}" class="btn btn-sm btn-primary"><i class="fas fa-info-circle"></i></a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% for st in staf %}
+        {{ st }}
+    {% endfor %}
+
+{% endblock %}
+{% block script %}
+    <script src="{% static 'vendor/datatables/jquery.dataTables.min.js'%}"></script>
+    <script src="{% static 'vendor/datatables/dataTables.bootstrap4.min.js'%}"></script>
+    <script src="{% static 'js/demo/datatables-demo.js'%}"></script>
+{% endblock %}

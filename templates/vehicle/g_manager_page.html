@@ -1,0 +1,138 @@
+{% extends 'layout/admin_layout.html' %}
+{% load bootstrap4 %}
+{% load static %}
+{% block dash %}
+    active
+{% endblock%}
+{% block requrl %}
+{% url 'vehicle:all_requests' %}
+{% endblock %}
+{% block staffurl %}
+{% url 'vehicle:manager_staff_list' %}
+{% endblock %}
+{% block branchurl %}
+{% url 'vehicle:branches' %}
+{% endblock %}
+{% block title %}
+Dashboard
+{% endblock %}
+{% block css %}
+    <link href="{% static 'vendor/datatables/dataTables.bootstrap4.min.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block add %}
+    <button class="btn btn-outline btn-light" type="button" data-toggle="modal" data-target="#staffBackdrop"><i class="fas fa-user-circle" title="add new staff"> +</i></button>
+    <button class="btn btn-outline btn-light" type="button" data-toggle="modal" data-target="#carBackdrop"><i class="fas fa-car " title="add new car"> +</i></button>
+    {#    <a href="{% url 'vehicle:new_car' %}" class="btn btn-outline btn-light"><i class="fas fa-car-side " title="add new car"> +</i></a>#}
+    <button type="button" data-toggle="modal" data-target="#branchBackdrop" class="btn btn-outline btn-light"><i class="far fa-building " title="add new branch"> +</i></button>
+    {{ error }}
+{% endblock %}
+{% block contents %}
+    <div class="card">
+        <div class="card-header">
+            All Cars
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable">
+                    <thead>
+                    <tr>
+                        <th>Brand</th>
+                        <th>Name</th>
+                        <th>Colour</th>
+                        <th>Date Manufactured</th>
+                        <th>Date Bought</th>
+                        <th>Registration Number</th>
+                        <th>Details</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for car in cars %}
+                        <tr>
+                            <td>{{ car.brand.upper }}</td>
+                            <td>{{ car.name.upper }}</td>
+                            <td>{{ car.colour.upper }}</td>
+                            <td>{{ car.yr_of_manufacture.date }}</td>
+                            <td>{{ car.procurement_date.date }}</td>
+                            <td>{{ car.registration_number.upper }}</td>
+                            <td>
+                                <a href="{% url 'vehicle:car_details' car.id %}" class="btn btn-sm btn-primary"><i class="fas fa-info-circle"></i></a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+{% block foot %}
+    <div class="modal fade" id="branchBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="branchBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Add New Branch</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="" method="post">{% csrf_token %}
+                        <input type="hidden" name="form" value="form2">
+                        {% bootstrap_form form2 %}
+                        <input type="submit" class="btn  btn-block btn-success" value="Submit">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="staffBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staffBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Add New Staff</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="{% url 'staff:new_staff' %}" method="post">{% csrf_token %}
+{#                        <input type="hidden" name="form" value="form1">#}
+                        {% bootstrap_form form1 %}
+                        <input type="submit" class="btn  btn-block btn-success" value="Submit">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="carBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="carBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Add New Car</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <form action="" method="post">{% csrf_token %}
+                        <input type="hidden" name="form" value="form3">
+                        {% bootstrap_form form3 %}
+                        <input type="submit" class="btn  btn-block btn-success" value="Submit">
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block script %}
+    <script src="{% static 'vendor/datatables/jquery.dataTables.min.js'%}"></script>
+    <script src="{% static 'vendor/datatables/dataTables.bootstrap4.min.js'%}"></script>
+    <script src="{% static 'js/demo/datatables-demo.js'%}"></script>
+{% endblock %}
